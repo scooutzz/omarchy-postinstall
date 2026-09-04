@@ -5,6 +5,5 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 . "$DIR/install-dotfiles.sh"
 . "$DIR/install-zsh.sh"
-. "$DIR/install-zsh-plugins.sh"
 # . "$DIR/install-tailscale.sh"
 # . "$DIR/install-helium.sh"
