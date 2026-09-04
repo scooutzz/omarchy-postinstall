@@ -9,32 +9,47 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DST="$HOME/.config"
 
 # Apps with only partial overrides tracked in the repo (Omarchy owns the rest).
-# Add new ones here when you only want to track a few files for that app.
-PARTIAL=(hypr)
+# Format: "app"        -> files go under $HOME/.config/<app>/
+#         "app:target" -> files go under <target>/ (use for apps whose config
+#                          lives outside ~/.config, like zsh at ~/.zshrc)
+PARTIAL=(
+  "hypr"
+  "zsh:$HOME"
+)
 
 [[ -d "$REPO_DIR/config" ]] || { err "Missing $REPO_DIR/config/"; exit 1; }
 
-echo "==> Linking dotfiles into $DST"
+echo "==> Linking dotfiles"
 
 for app_dir in "$REPO_DIR"/config/*/; do
   app="$(basename "$app_dir")"
-  dst_app="$DST/$app"
 
-  if [[ " ${PARTIAL[*]} " == *" $app "* ]]; then
-    # Per-file symlinks: leave existing files in ~/.config/<app>/ alone
-    mkdir -p "$dst_app"
+  # Find matching PARTIAL entry (may have a ":target" suffix)
+  partial_target=""
+  for entry in "${PARTIAL[@]}"; do
+    if [[ "${entry%%:*}" == "$app" ]]; then
+      partial_target="${entry#*:}"
+      [[ "$partial_target" == "$entry" ]] && partial_target="$DST/$app"
+      break
+    fi
+  done
+
+  if [[ -n "$partial_target" ]]; then
+    # Per-file symlinks under the configured target dir
+    mkdir -p "$partial_target"
     while IFS= read -r -d '' f; do
       rel="${f#"$app_dir"}"
       rel="${rel#/}"
-      dst_file="$dst_app/$rel"
+      dst_file="$partial_target/$rel"
       if [[ -e "$dst_file" && ! -L "$dst_file" ]]; then
         mv "$dst_file" "$dst_file.bak.$(date +%s)"
       fi
       ln -sfn "$f" "$dst_file"
     done < <(find "$app_dir" -type f -print0)
-    echo "    $app: per-file symlinks"
+    echo "    $app: per-file -> $partial_target/"
   else
-    # Whole-folder symlink: one link for the whole config
+    # Whole-folder symlink under $DST/<app>
+    dst_app="$DST/$app"
     if [[ -e "$dst_app" && ! -L "$dst_app" ]]; then
       mv "$dst_app" "$dst_app.bak.$(date +%s)"
     fi
