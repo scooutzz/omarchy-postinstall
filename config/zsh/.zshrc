@@ -33,10 +33,6 @@ if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"
 fi
 
-if [[ -o interactive ]] && command -v starship &>/dev/null; then
-  eval "$(starship init zsh)"
-fi
-
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init zsh)"
 fi
@@ -46,7 +42,7 @@ if command -v fzf &>/dev/null; then
   [[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
 fi
 
-# ---- Oh My Zsh (kept on top, loaded before Omarchy aliases) ----
+# ---- Oh My Zsh (loaded before starship so the prompt gets overridden) ----
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(
@@ -57,6 +53,11 @@ plugins=(
   # zsh-syntax-highlighting   # install: git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
+
+# ---- Starship prompt (last so it overrides OMZ's theme) ----
+if [[ -o interactive ]] && command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
 
 # ---- Omarchy aliases (defined AFTER OMZ so they win) ----
 if command -v eza &>/dev/null; then
