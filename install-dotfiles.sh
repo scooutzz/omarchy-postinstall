@@ -14,7 +14,6 @@ DST="$HOME/.config"
 #                          lives outside ~/.config, like zsh at ~/.zshrc)
 PARTIAL=(
   "hypr"
-  "bash:$HOME"
   "zsh:$HOME"
 )
 
