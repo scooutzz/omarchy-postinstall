@@ -3,39 +3,21 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET="${HOME:-/root}"
-REPO_PREFIX="config"
-TARGET_PREFIX=".config"
+STOW_TARGET="${TARGET}/.config"
+PACKAGE="omarchy"
 
-FILES=(
-  "hypr/bindings.lua"
-  "hypr/input.lua"
-  "hypr/looknfeel.lua"
-  "foot/foot.ini"
-  "tmux/tmux.conf"
-)
+if ! command -v stow >/dev/null 2>&1; then
+  echo "stow not found. Install it with: omarchy pkg add stow" >&2
+  exit 1
+fi
 
-echo "==> Installing Omarchy post-install configs into ${TARGET}/${TARGET_PREFIX}/"
+echo "==> Stowing ${PACKAGE} into ${STOW_TARGET}"
 
-for rel in "${FILES[@]}"; do
-  src="${REPO_DIR}/${REPO_PREFIX}/${rel}"
-  dst="${TARGET}/${TARGET_PREFIX}/${rel}"
+# Adopt pre-existing files so stow replaces them with symlinks (instead of skipping).
+( cd "${REPO_DIR}/stow" && stow --adopt -R -t "${STOW_TARGET}" "${PACKAGE}" )
 
-  if [[ ! -f "${src}" ]]; then
-    echo "    SKIP (missing in repo): ${REPO_PREFIX}/${rel}"
-    continue
-  fi
-
-  mkdir -p "$(dirname "${dst}")"
-
-  if [[ -f "${dst}" ]] && ! cmp -s "${src}" "${dst}"; then
-    bak="${dst}.bak.$(date +%s)"
-    cp "${dst}" "${bak}"
-    echo "    backed up: ${TARGET_PREFIX}/${rel} -> ${bak}"
-  fi
-
-  cp "${src}" "${dst}"
-  echo "    installed: ${TARGET_PREFIX}/${rel}"
-done
+echo "==> Symlinks managed by stow:"
+( cd "${STOW_TARGET}" && find . -maxdepth 4 -lname "*/stow/${PACKAGE}/*" 2>/dev/null | sort | sed "s|^|    |" )
 
 if command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; then
   echo "==> Reloading Hyprland..."
@@ -46,7 +28,7 @@ fi
 
 if command -v tmux >/dev/null 2>&1 && tmux has-session 2>/dev/null; then
   echo "==> Sourcing new tmux config..."
-  tmux source-file "${TARGET}/${TARGET_PREFIX}/tmux/tmux.conf"
+  tmux source-file "${STOW_TARGET}/tmux/tmux.conf"
 else
   echo "==> Tmux not running; new config will apply on next start."
 fi
