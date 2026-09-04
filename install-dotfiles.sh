@@ -21,6 +21,20 @@ ok "Stow complete"
 log "Symlinks managed by stow:"
 ( cd "${STOW_TARGET}" && find . -maxdepth 4 -lname "*/stow/${PACKAGE}/*" 2>/dev/null | sort | sed "s|^|  |" )
 
+# Neovim: symlink the whole config dir (kept outside the stow package so a
+# single symlink covers every file under ~/.config/nvim).
+NVIM_SRC="${REPO_DIR}/nvim"
+NVIM_DST="${STOW_TARGET}/nvim"
+if [[ -d "${NVIM_SRC}" ]]; then
+  if [[ -e "${NVIM_DST}" && ! -L "${NVIM_DST}" ]]; then
+    bak="${NVIM_DST}.bak.$(date +%s)"
+    mv "${NVIM_DST}" "${bak}"
+    log "Backed up ${NVIM_DST} -> ${bak}"
+  fi
+  ln -sfn "${NVIM_SRC}" "${NVIM_DST}"
+  ok "nvim -> $(readlink "${NVIM_DST}")"
+fi
+
 if is_cmd hyprctl && hyprctl version >/dev/null 2>&1; then
   log "Reloading Hyprland"
   hyprctl reload
