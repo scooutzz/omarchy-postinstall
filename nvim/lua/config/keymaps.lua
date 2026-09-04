@@ -1,6 +1,3 @@
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>pv', '<cmd>Ex<CR>', { desc = 'Netrw' })
@@ -27,3 +24,4 @@ vim.keymap.set('n', 'N', 'Nzzzv')
 vim.keymap.set('n', '=ap', "ma=ap'a")
 
 vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { desc = 'Set file execution permission', silent = true })
+

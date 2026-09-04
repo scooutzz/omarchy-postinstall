@@ -1,48 +1,23 @@
 #!/usr/bin/env bash
-# Stow the dotfiles in stow/omarchy/ into ~/.config/.
-set -euo pipefail
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-. "${SCRIPT_DIR}/lib/common.sh"
+# Stow dotfiles into ~/.config and symlink nvim/ as a whole.
+set -e
+. "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 
-REPO_DIR="${SCRIPT_DIR}"
-TARGET="${HOME:-/root}"
-STOW_TARGET="${TARGET}/.config"
-PACKAGE="omarchy"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DST="$HOME/.config"
 
-is_cmd stow || { err "stow not found. Run ./install-stow.sh first"; exit 1; }
+echo "==> Stowing dotfiles..."
+( cd "$REPO_DIR/stow" && stow --adopt -R -t "$DST" omarchy )
 
-[[ -d "${REPO_DIR}/stow/${PACKAGE}" ]] || { err "Missing stow/${PACKAGE}/ directory"; exit 1; }
-
-log "Stowing ${PACKAGE} into ${STOW_TARGET}"
-( cd "${REPO_DIR}/stow" && stow --adopt -R -t "${STOW_TARGET}" "${PACKAGE}" )
-ok "Stow complete"
-
-log "Symlinks managed by stow:"
-( cd "${STOW_TARGET}" && find . -maxdepth 4 -lname "*/stow/${PACKAGE}/*" 2>/dev/null | sort | sed "s|^|  |" )
-
-# Neovim: symlink the whole config dir (kept outside the stow package so a
-# single symlink covers every file under ~/.config/nvim).
-NVIM_SRC="${REPO_DIR}/nvim"
-NVIM_DST="${STOW_TARGET}/nvim"
-if [[ -d "${NVIM_SRC}" ]]; then
-  if [[ -e "${NVIM_DST}" && ! -L "${NVIM_DST}" ]]; then
-    bak="${NVIM_DST}.bak.$(date +%s)"
-    mv "${NVIM_DST}" "${bak}"
-    log "Backed up ${NVIM_DST} -> ${bak}"
+# Single symlink for nvim (kept outside the stow package).
+if [[ -d "$REPO_DIR/nvim" ]]; then
+  if [[ -e "$DST/nvim" && ! -L "$DST/nvim" ]]; then
+    mv "$DST/nvim" "$DST/nvim.bak.$(date +%s)"
   fi
-  ln -sfn "${NVIM_SRC}" "${NVIM_DST}"
-  ok "nvim -> $(readlink "${NVIM_DST}")"
+  ln -sfn "$REPO_DIR/nvim" "$DST/nvim"
+  echo "==> nvim -> $(readlink "$DST/nvim")"
 fi
 
-if is_cmd hyprctl && hyprctl version >/dev/null 2>&1; then
-  log "Reloading Hyprland"
-  hyprctl reload
-fi
-
-if is_cmd tmux && tmux has-session 2>/dev/null; then
-  log "Sourcing new tmux config"
-  tmux source-file "${STOW_TARGET}/tmux/tmux.conf"
-fi
-
-ok "Done (open a new foot window for foot.ini changes to take effect)"
+# Apply live changes.
+is_cmd hyprctl && hyprctl reload >/dev/null 2>&1 && echo "==> Hyprland reloaded"
+tmux has-session 2>/dev/null && tmux source-file "$DST/tmux/tmux.conf" >/dev/null 2>&1 && echo "==> tmux reloaded"

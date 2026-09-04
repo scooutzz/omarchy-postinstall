@@ -1,4 +1,5 @@
-require("config.remote_clipboard").steup()
+-- Options are automatically loaded before lazy.nvim startup.
+require("config.remote_clipboard").setup()
 
 vim.g.have_nerd_font = true
 
