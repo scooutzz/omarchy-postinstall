@@ -1,36 +1,26 @@
 #!/usr/bin/env bash
+# Run every install-*.sh in this repo, in order.
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="${HOME:-/root}"
-STOW_TARGET="${TARGET}/.config"
-PACKAGE="omarchy"
+# shellcheck source=lib/common.sh
+. "${SCRIPT_DIR}/lib/common.sh"
 
-if ! command -v stow >/dev/null 2>&1; then
-  echo "stow not found. Install it with: omarchy pkg add stow" >&2
-  exit 1
-fi
+STEPS=(
+  install-stow.sh
+  install-dotfiles.sh
+  # install-tailscale.sh
+  # install-helium.sh
+)
 
-echo "==> Stowing ${PACKAGE} into ${STOW_TARGET}"
+for step in "${STEPS[@]}"; do
+  path="${SCRIPT_DIR}/${step}"
+  if [[ ! -f "${path}" ]]; then
+    warn "Skipping missing step: ${step}"
+    continue
+  fi
+  log "==> ${step%.sh}"
+  . "${path}"
+done
 
-# Adopt pre-existing files so stow replaces them with symlinks (instead of skipping).
-( cd "${REPO_DIR}/stow" && stow --adopt -R -t "${STOW_TARGET}" "${PACKAGE}" )
-
-echo "==> Symlinks managed by stow:"
-( cd "${STOW_TARGET}" && find . -maxdepth 4 -lname "*/stow/${PACKAGE}/*" 2>/dev/null | sort | sed "s|^|    |" )
-
-if command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; then
-  echo "==> Reloading Hyprland..."
-  hyprctl reload
-else
-  echo "==> Hyprland not running; reload it manually to apply changes."
-fi
-
-if command -v tmux >/dev/null 2>&1 && tmux has-session 2>/dev/null; then
-  echo "==> Sourcing new tmux config..."
-  tmux source-file "${STOW_TARGET}/tmux/tmux.conf"
-else
-  echo "==> Tmux not running; new config will apply on next start."
-fi
-
-echo "==> Done. Open a new foot window for foot.ini changes to take effect."
+ok "All steps finished."
