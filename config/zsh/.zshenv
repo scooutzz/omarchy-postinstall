@@ -2,4 +2,5 @@
 # This is where the Omarchy PATH/OMARCHY_PATH bootstrap goes, so non-interactive
 # shells (scripts, ssh commands, mise) still find /usr/share/omarchy on PATH.
 
-[[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
+: "${OMARCHY_PATH:=/usr/share/omarchy}"
+[[ -r "$OMARCHY_PATH/default/bash/env-bootstrap" ]] && source "$OMARCHY_PATH/default/bash/env-bootstrap"
