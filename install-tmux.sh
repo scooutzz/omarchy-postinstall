@@ -5,7 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 . "$SCRIPT_DIR/lib/common.sh"
 
-TMUX_DIR="$(pwd)/config/tmux"
+CONFIG_DIR="$(pwd)/config/tmux"
+TMUX_DIR="$HOME/.config/tmux"
 
 # Install TMUX
 omarchy pkg aur add tmux
@@ -21,4 +22,6 @@ else
   echo "TPM installed successfully!"
 fi
 
-link_path "$TMUX_DIR" "$HOME/.config/tmux"
+link_path "$CONFIG_DIR" "$TMUX_DIR"
+rm -rf ~/.config/tmux/plugins
+$HOME/.tmux/plugins/tpm/bin/install_plugins

@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Make omarchy-nvim backup
-mv ~/.config/nvim ~/.config/omarchy-nvim/
+NVIM_DIR="$HOME/.config/nvim"
+BACKUP_DIR="$HOME/.config/omarchy-nvim"
 
-# Clone repo
-git clone https://github.com/scooutzz/nvim.git ~/.config
+if [ -d "$NVIM_DIR" ]; then
+    if [ -d "$BACKUP_DIR" ]; then
+        rm -rf "$NVIM_DIR"
+    else
+        mkdir -p "$(dirname "$BACKUP_DIR")"
+        mv "$NVIM_DIR" "$BACKUP_DIR"
+    fi
+fi
+
+git clone https://github.com/scooutzz/nvim.git "$NVIM_DIR"

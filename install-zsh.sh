@@ -84,8 +84,8 @@ clone_omz_plugin zsh-syntax-highlighting
 CONFIG_DIR="$(pwd)/config"
 
 # Link zsh
-link_path "$CONFIG_DIR/zsh/.zshenv" "$HOME"
-link_path "$CONFIG_DIR/zsh/.zshrc" "$HOME"
+ln -sf "$CONFIG_DIR/zsh/.zshenv" "$HOME"
+ln -sf "$CONFIG_DIR/zsh/.zshrc" "$HOME"
 
 # Link starship
 link_path "$CONFIG_DIR/starship/starship.toml" "$HOME/.config/starship.toml"

@@ -11,6 +11,7 @@ INSTALLERS=(
   "install-zsh.sh"
   "install-nvim.sh"
   "install-tmux.sh"
+  "install-hyprland.sh"
   "install-tailscale.sh"
   "install-bitwarden.sh"
   "install-mongodb-compass.sh"
