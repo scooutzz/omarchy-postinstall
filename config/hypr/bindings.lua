@@ -12,22 +12,6 @@
 -- To disable all preinstalled app/webapp bindings, set:
 -- omarchy_preinstalled_bindings = false
 
--- Add a new binding.
--- o.bind("SUPER + SHIFT + R", "SSH", "alacritty -e ssh your-server")
-
--- Change an existing binding by unbinding it first, then binding the key again.
--- This example changes SUPER+SPACE from the launcher to the Omarchy root menu.
--- hl.unbind("SUPER + SPACE")
--- o.bind("SUPER + SPACE", "Omarchy menu", "omarchy-menu toggle root")
-
--- Disable a default binding without replacing it.
--- hl.unbind("SUPER + SHIFT + B")
-
--- Logitech MX Keys examples:
--- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
--- o.bind("SUPER + H", nil, "voxtype record toggle")
--- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
-
 local mainMod = "SUPER"
 
 hl.unbind(mainMod .. " + W")
@@ -41,8 +25,9 @@ local motions = {
 }
 
 for _, motion in pairs(motions) do
-  hl.unbind("SUPER + " .. motion.key) -- unbind mod + hjkl
-  hl.unbind("SUPER + " .. motion.dir) -- unbind mod + arrow keys
+  hl.unbind("SUPER + " .. motion.key)         -- unbind mod + hjkl
+  hl.unbind("SUPER + " .. motion.dir)         -- unbind mod + arrow keys
+  hl.unbind("SUPER + SHIFT + " .. motion.dir) -- unbind mod shift + arrow keys
   o.bind(
     mainMod .. " + " .. string.upper(motion.key),
     "Focus on " .. motion.mov .. " window",
@@ -50,7 +35,7 @@ for _, motion in pairs(motions) do
   )
   o.bind(
     mainMod .. " + SHIFT + " .. string.upper(motion.key),
-    "Swap window" .. motion.mov .. " window",
+    "Swap window " .. motion.mov,
     hl.dsp.window.swap({ direction = motion.dir })
   )
 end
