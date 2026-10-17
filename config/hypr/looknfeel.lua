@@ -8,8 +8,8 @@ hl.window_rule({ match = { float = false, workspace = "f[1]" }, rounding = 0 })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#decoration
 hl.config({
-  decoration = {
-    dim_inactive = true,
-    dim_strength = 0.15,
-  },
+	decoration = {
+		dim_inactive = true,
+		dim_strength = 0.15,
+	},
 })

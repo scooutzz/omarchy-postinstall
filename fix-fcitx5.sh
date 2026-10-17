@@ -8,6 +8,6 @@ readonly SCRIPT_DIR
 CONFIG_DIR="$(pwd)/config/fcitx5"
 FCITX5_DIR="$HOME/.config/fcitx5/conf/"
 
-link_path "$CONFIG_DIR/keyboard.conf" "FCITX5_DIR/keyboard.conf"
+link_path "$CONFIG_DIR/keyboard.conf" "$FCITX5_DIR/keyboard.conf"
 
 fcitx5-remote -r
