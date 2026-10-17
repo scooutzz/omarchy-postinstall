@@ -19,6 +19,8 @@ INSTALLERS=(
     "install-brave-origin.sh"
 )
 
+omarchy update
+
 for installer in "${INSTALLERS[@]}"; do
     [[ -f "$SCRIPT_DIR/$installer" ]] || {
         err "Installer not found: $SCRIPT_DIR/$installer"
