@@ -25,3 +25,7 @@ fi
 link_path "$CONFIG_DIR" "$TMUX_DIR"
 rm -rf ~/.config/tmux/plugins
 $HOME/.tmux/plugins/tpm/bin/install_plugins
+
+link_path "$(pwd)/config/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
+mkdir -p ~/.config/tmux-sessionizer
+link_path "$(pwd)/config/tmux-sessionizer/tmux-sessionizer.conf" "$HOME/.config/tmux-sessionizer/tmux-sessionizer.conf"

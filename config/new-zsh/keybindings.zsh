@@ -22,3 +22,5 @@ bindkey '^L' autosuggest-accept
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
+
+bindkey -s '^f' "tmux-sessionizer\n"
