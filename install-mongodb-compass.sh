@@ -12,6 +12,8 @@ readonly COMPASS_DESKTOP="mongodb-compass.desktop"
 readonly SYSTEM_DESKTOP="/usr/share/applications/$COMPASS_DESKTOP"
 readonly USER_APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 readonly USER_DESKTOP="$USER_APPLICATIONS_DIR/$COMPASS_DESKTOP"
+readonly QXL_VENDOR_ID="0x1b36"
+readonly QXL_DEVICE_ID="0x0100"
 
 temporary_desktop=""
 
@@ -34,14 +36,32 @@ if [[ ! -r "$SYSTEM_DESKTOP" ]]; then
   exit 1
 fi
 
+compass_exec='env MONGODB_COMPASS_TEST_LOG_DIR=/dev/null mongodb-compass --gtk-version=3'
+
+for drm_device in /sys/class/drm/card*/device; do
+  [[ -r "$drm_device/vendor" && -r "$drm_device/device" ]] || continue
+
+  read -r vendor_id <"$drm_device/vendor"
+  read -r device_id <"$drm_device/device"
+
+  if [[ "$vendor_id" == "$QXL_VENDOR_ID" && "$device_id" == "$QXL_DEVICE_ID" ]]; then
+    compass_exec+=' --ozone-platform=x11 --disable-gpu'
+    log "QXL virtual GPU detected; using X11 software rendering for MongoDB Compass"
+    break
+  fi
+done
+
+compass_exec+=' --password-store="gnome-libsecret" --ignore-additional-command-line-flags %U'
+readonly compass_exec
+
 mkdir -p "$USER_APPLICATIONS_DIR"
 temporary_desktop="$(mktemp --tmpdir="$USER_APPLICATIONS_DIR" ".mongodb-compass.XXXXXX.desktop")"
 
 # Keep the working command in a per-user override so package updates do not
 # replace it.
-awk '
+awk -v exec_line="$compass_exec" '
   !replaced && /^Exec=/ {
-    print "Exec=mongodb-compass --password-store=\"gnome-libsecret\" --ignore-additional-command-line-flags %U"
+    print "Exec=" exec_line
     replaced = 1
     next
   }
