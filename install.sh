@@ -8,6 +8,7 @@ readonly SCRIPT_DIR
 
 INSTALLERS=(
     "preinstalls.sh"
+    "install-plugins.sh"
     "fix-fcitx5.sh"
     "install-newzsh.sh"
     "install-nvim.sh"
