@@ -7,6 +7,7 @@ hl.config({
 	input = {
 		-- Use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
 		kb_layout = "us",
+		kb_options = "caps:escape,shift:both_capslock_cancel",
 
 		-- Change speed of keyboard repeat.
 		repeat_rate = 40,
