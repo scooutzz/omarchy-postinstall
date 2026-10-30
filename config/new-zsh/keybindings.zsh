@@ -9,14 +9,13 @@ for keymap in emacs viins vicmd; do
   bindkey -M "$keymap" '^[[B' down-line-or-beginning-search
   bindkey -M "$keymap" '^[OA' up-line-or-beginning-search
   bindkey -M "$keymap" '^[OB' down-line-or-beginning-search
-  bindkey -M "$keymap" '^K' up-line-or-beginning-search
-  bindkey -M "$keymap" '^J' down-line-or-beginning-search
-  bindkey -M "$keymap" '^[[Z' reverse-menu-complete
+  bindkey -M "$keymap" '^P' up-line-or-beginning-search
+  bindkey -M "$keymap" '^N' down-line-or-beginning-search
 done
 unset keymap
 
 # Accept the current autosuggestion.
-bindkey '^L' autosuggest-accept
+bindkey '^[l' autosuggest-accept
 
 # Edit the current command in the configured editor, then return to the prompt.
 autoload -Uz edit-command-line

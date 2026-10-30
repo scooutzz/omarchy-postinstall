@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-omarchy-remove-presinstalls
+# omarchy-remove-presinstalls
+omarchy remove preinstalls
 
-omarchy-pkg-add \
+omarchy pkg add \
     aether \
     cliamp \
     omacut \

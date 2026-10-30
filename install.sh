@@ -10,7 +10,7 @@ INSTALLERS=(
     "preinstalls.sh"
     "install-plugins.sh"
     "fix-fcitx5.sh"
-    "install-newzsh.sh"
+    "install-zsh.sh"
     "install-nvim.sh"
     "install-tmux.sh"
     "install-hyprland.sh"
@@ -20,7 +20,7 @@ INSTALLERS=(
     "install-brave-origin.sh"
 )
 
-omarchy update
+# omarchy update
 
 for installer in "${INSTALLERS[@]}"; do
     [[ -f "$SCRIPT_DIR/$installer" ]] || {
